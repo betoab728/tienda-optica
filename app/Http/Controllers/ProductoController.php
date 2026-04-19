@@ -18,5 +18,6 @@ class ProductoController extends Controller
         $productos = $this->productoRepository->obtenerCatalogo();
 
         return view('home', compact('productos'));
+        //ok funcionando
     }
 }
