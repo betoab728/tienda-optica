@@ -15,10 +15,8 @@ class ProductoController extends Controller
     }
     public function index()
     {
-       /* $productos = $this->productoRepository->obtenerCatalogo();
+        $productos = $this->productoRepository->obtenerCatalogo();
 
-        return view('home', compact('productos'));*/
-
-        return "OK FUNCIONANDO";
+        return view('home', compact('productos'));
     }
 }
