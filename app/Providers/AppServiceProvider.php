@@ -13,4 +13,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind('db.connector.sqlsrv', CustomSqlServerConnector::class);
     }
+    public function boot()
+    {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+    }
 }
