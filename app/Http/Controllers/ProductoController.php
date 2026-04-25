@@ -20,4 +20,14 @@ class ProductoController extends Controller
         return view('home', compact('productos'));
         //ok funcionando
     }
+    public function show($id)
+    {
+        $producto = $this->productoRepository->obtenerPorId($id);
+
+        if (!$producto) {
+            abort(404);
+        }
+
+        return view('producto.detalle', compact('producto'));
+    }
 }
