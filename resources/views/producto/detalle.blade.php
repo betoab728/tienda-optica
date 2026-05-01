@@ -46,7 +46,7 @@
             activeIndex: 0
         }">
             
-            {{-- LEFT SIDE: Imagen principal + thumbnails --}}
+           {{-- LEFT SIDE: Imagen principal + thumbnails --}}
             <div class="lg:col-span-3" 
                 x-data="{ 
                     selectedImage: '{{ $producto->imagenes[0] }}',
@@ -54,70 +54,27 @@
                 }">
 
                 {{-- Imagen principal --}}
-                <div class="relative group bg-gradient-to-br from-gray-50 to-white rounded-2xl border-2 border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden mb-6">
-                    {{-- Image Counter Badge --}}
-                    <div class="absolute top-4 right-4 z-10 bg-black/70 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                        <span x-text="activeIndex + 1"></span> / {{ count($producto->imagenes) }}
-                    </div>
-
-                    {{-- Zoom Hint (appears on hover) --}}
-                    <div class="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                        </svg>
-                        Click para ampliar
-                    </div>
-
-                    {{-- Main Product Image --}}
-                    <div class="p-8 md:p-12">
-                        <img 
-                            :src="selectedImage"
-                            alt="{{ $producto->modelo }}"
-                            class="w-full h-[400px] md:h-[500px] object-contain transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
-                        >
-                    </div>
+                <div class="bg-white rounded-xl border p-6 mb-4">
+                    <img 
+                        :src="selectedImage"
+                        alt="{{ $producto->modelo }}"
+                        class="w-full h-[450px] object-contain transition-all duration-300"
+                    >
                 </div>
 
-                {{-- Thumbnails Gallery --}}
-                <div class="relative">
-                    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        @foreach ($producto->imagenes as $index => $img)
-                            <div 
-                                @click="selectedImage = '{{ $img }}'; activeIndex = {{ $index }}"
-                                class="relative flex-shrink-0 w-24 h-24 bg-white rounded-xl border-2 cursor-pointer transition-all duration-300 overflow-hidden group/thumb"
-                                :class="activeIndex === {{ $index }} 
-                                    ? 'border-gray-900 ring-4 ring-gray-900 ring-offset-2 shadow-xl scale-105' 
-                                    : 'border-gray-200 hover:border-gray-400 hover:shadow-lg hover:scale-105'"
-                            >
-                                {{-- Thumbnail Image --}}
-                                <img 
-                                    src="{{ $img }}"
-                                    alt="{{ $producto->modelo }} - Vista {{ $index + 1 }}"
-                                    class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover/thumb:scale-110"
-                                    onerror="this.parentElement.style.display='none'"
-                                >
-
-                                {{-- Active Indicator Overlay --}}
-                                <div 
-                                    class="absolute inset-0 bg-gray-900/10 transition-opacity duration-200"
-                                    :class="activeIndex === {{ $index }} ? 'opacity-0' : 'opacity-0 group-hover/thumb:opacity-100'"
-                                ></div>
-
-                                {{-- Checkmark for Active Thumbnail --}}
-                                <div 
-                                    class="absolute top-1.5 right-1.5 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center transition-all duration-200"
-                                    :class="activeIndex === {{ $index }} ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"
-                                >
-                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    {{-- Gradient Fade Effect (for overflow indication) --}}
-                    <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
+                {{-- Miniaturas --}}
+                <div class="flex gap-3 overflow-x-auto">
+                    @foreach ($producto->imagenes as $index => $img)
+                        <img 
+                            src="{{ $img }}"
+                            @click="selectedImage = '{{ $img }}'; activeIndex = {{ $index }}"
+                            class="w-20 h-20 object-contain border rounded-lg cursor-pointer transition-all duration-200"
+                            :class="activeIndex === {{ $index }} 
+                                ? 'border-gray-900 ring-2 ring-gray-900' 
+                                : 'border-gray-300 hover:border-gray-500'"
+                            onerror="this.style.display='none'"
+                        >
+                    @endforeach
                 </div>
 
             </div>
