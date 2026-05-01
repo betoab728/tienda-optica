@@ -19,7 +19,6 @@
                             loading="lazy"
                             onerror="this.src='https://placehold.co/600x600/f3f4f6/9ca3af?text=Sin+imagen';"
                         >
-                        <p>{{ $p->imagen }}</p>
                     </div>
                     <div class="p-4 space-y-3">
                         <div>
