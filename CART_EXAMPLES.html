@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart System Examples - Tienda Óptica</title>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 20px; }
+        .example { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        pre { background: #1f2937; color: #e5e7eb; padding: 15px; border-radius: 6px; overflow-x: auto; }
+        button { background: #1f2937; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #374151; }
+        .badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>🛒 Shopping Cart System - Implementation Examples</h1>
+
+<p>Complete examples of how to integrate the cart system in your Laravel Blade templates.</p>
+
+<hr>
+
+<!-- Example 1: Quick Add Button -->
+<div class="example">
+    <h2>Example 1: Quick Add Button (Catalog)</h2>
+    <p>Single button that adds 1 item to cart with loading state.</p>
+    
+    <div x-data="{ adding: false }">
+        <button 
+            @click="
+                adding = true;
+                fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                    },
+                    body: JSON.stringify({
+                        product_id: 123,
+                        name: 'Ray-Ban Aviator',
+                        price: 299.90,
+                        image: 'https://via.placeholder.com/300',
+                        quantity: 1
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    adding = false;
+                    window.dispatchEvent(new CustomEvent('cart-updated', { detail: data.cart }));
+                    alert('✓ Producto agregado al carrito');
+                })
+                .catch(err => {
+                    adding = false;
+                    alert('Error: ' + err.message);
+                });
+            "
+            :disabled="adding"
+        >
+            <span x-text="adding ? 'Agregando...' : 'Agregar al carrito'"></span>
+        </button>
+    </div>
+
+    <h3>Blade Code:</h3>
+    <pre>&lt;div x-data="{ adding: false }"&gt;
+    &lt;button 
+        @click="
+            adding = true;
+            fetch('{{ route('cart.add') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    product_id: {{ $producto->id }},
+                    name: '{{ addslashes($producto->nombre) }}',
+                    price: {{ $producto->precio }},
+                    image: '{{ $producto->imagen }}',
+                    quantity: 1
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                adding = false;
+                window.dispatchEvent(new CustomEvent('cart-updated', { 
+                    detail: data.cart 
+                }));
+                alert('✓ Producto agregado');
+            })
+            .catch(err => {
+                adding = false;
+                alert('Error');
+            });
+        "
+        :disabled="adding"
+    &gt;
+        &lt;span x-text="adding ? 'Agregando...' : 'Agregar'"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+&lt;/div&gt;</pre>
+</div>
+
+<!-- Example 2: With Quantity Selector -->
+<div class="example">
+    <h2>Example 2: Add with Quantity Selector</h2>
+    <p>Allows user to select quantity before adding.</p>
+    
+    <div x-data="{ qty: 1, adding: false }">
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+            <button @click="if(qty > 1) qty--">-</button>
+            <input type="number" x-model="qty" min="1" style="width: 60px; text-align: center; padding: 8px;">
+            <button @click="qty++">+</button>
+        </div>
+        
+        <button 
+            @click="
+                adding = true;
+                fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                    },
+                    body: JSON.stringify({
+                        product_id: 456,
+                        name: 'Oakley Sport',
+                        price: 399.90,
+                        image: 'https://via.placeholder.com/300',
+                        quantity: qty
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    adding = false;
+                    alert('✓ ' + qty + ' producto(s) agregado(s)');
+                    qty = 1;
+                })
+                .catch(err => {
+                    adding = false;
+                    alert('Error');
+                });
+            "
+            :disabled="adding"
+        >
+            <span x-text="adding ? 'Agregando...' : 'Agregar ' + qty + ' al carrito'"></span>
+        </button>
+    </div>
+
+    <h3>Blade Code:</h3>
+    <pre>&lt;div x-data="{ qty: 1, adding: false }"&gt;
+    &lt;!-- Quantity Selector --&gt;
+    &lt;div class="flex gap-3"&gt;
+        &lt;button @click="if(qty > 1) qty--"&gt;-&lt;/button&gt;
+        &lt;input type="number" x-model="qty" min="1"&gt;
+        &lt;button @click="qty++"&gt;+&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Add Button --&gt;
+    &lt;button 
+        @click="/* same fetch as Example 1, but use qty variable */"
+        :disabled="adding"
+    &gt;
+        &lt;span x-text="adding ? 'Agregando...' : 'Agregar al carrito'"&gt;&lt;/span&gt;
+    &lt;/button&gt;
+&lt;/div&gt;</pre>
+</div>
+
+<!-- Example 3: Cart Count Badge -->
+<div class="example">
+    <h2>Example 3: Cart Count Badge (Header)</h2>
+    <p>Shows number of items in cart, updates automatically.</p>
+    
+    <div x-data="{ 
+        cartCount: 0,
+        init() {
+            window.addEventListener('cart-updated', (e) => {
+                this.cartCount = e.detail.total_count;
+            });
+        }
+    }">
+        <div style="position: relative; display: inline-block;">
+            <button style="background: transparent; color: #ef4444; border: 2px solid #ef4444;">
+                🛒 Carrito
+                <span 
+                    x-show="cartCount > 0"
+                    x-text="cartCount"
+                    class="badge"
+                    style="position: absolute; top: -8px; right: -8px;"
+                ></span>
+            </button>
+        </div>
+    </div>
+
+    <h3>Blade Code:</h3>
+    <pre>&lt;div x-data="{ 
+    cartCount: 0,
+    init() {
+        // Load initial count
+        fetch('{{ route('cart.count') }}')
+            .then(res => res.json())
+            .then(data => this.cartCount = data.count);
+        
+        // Listen for updates
+        window.addEventListener('cart-updated', (e) => {
+            this.cartCount = e.detail.total_count;
+        });
+    }
+}"&gt;
+    &lt;a href="/cart"&gt;
+        🛒 Carrito
+        &lt;span 
+            x-show="cartCount > 0"
+            x-text="cartCount"
+            class="badge"
+        &gt;&lt;/span&gt;
+    &lt;/a&gt;
+&lt;/div&gt;</pre>
+</div>
+
+<!-- Example 4: Get Cart Summary -->
+<div class="example">
+    <h2>Example 4: Get Full Cart Summary</h2>
+    <p>Retrieve all cart data including items, subtotal, and count.</p>
+
+    <div x-data="{ cart: null, loading: false }">
+        <button 
+            @click="
+                loading = true;
+                fetch('/cart')
+                    .then(res => res.json())
+                    .then(data => {
+                        loading = false;
+                        cart = data.cart;
+                    });
+            "
+        >
+            <span x-text="loading ? 'Cargando...' : 'Ver Carrito'"></span>
+        </button>
+
+        <div x-show="cart" style="margin-top: 20px; background: white; padding: 15px; border-radius: 6px;">
+            <h4>Resumen del Carrito:</h4>
+            <p><strong>Items:</strong> <span x-text="cart?.item_count"></span></p>
+            <p><strong>Cantidad total:</strong> <span x-text="cart?.total_count"></span></p>
+            <p><strong>Subtotal:</strong> S/ <span x-text="cart?.subtotal?.toFixed(2)"></span></p>
+        </div>
+    </div>
+
+    <h3>JavaScript Code:</h3>
+    <pre>fetch('/cart')
+    .then(res => res.json())
+    .then(data => {
+        console.log('Cart items:', data.cart.items);
+        console.log('Total count:', data.cart.total_count);
+        console.log('Subtotal:', data.cart.subtotal);
+    });</pre>
+</div>
+
+<!-- Example 5: Update/Remove Items -->
+<div class="example">
+    <h2>Example 5: Update or Remove Cart Item</h2>
+    
+    <h3>Update Quantity:</h3>
+    <pre>// Update item quantity
+fetch('/cart/update/123', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
+    },
+    body: JSON.stringify({ quantity: 3 })
+})
+.then(res => res.json())
+.then(data => {
+    console.log('Updated cart:', data.cart);
+});</pre>
+
+    <h3>Remove Item:</h3>
+    <pre>// Remove item from cart
+fetch('/cart/remove/123', {
+    method: 'DELETE',
+    headers: {
+        'X-CSRF-TOKEN': csrfToken
+    }
+})
+.then(res => res.json())
+.then(data => {
+    console.log('Item removed, cart:', data.cart);
+});</pre>
+
+    <h3>Clear Cart:</h3>
+    <pre>// Clear entire cart
+fetch('/cart/clear', {
+    method: 'DELETE',
+    headers: {
+        'X-CSRF-TOKEN': csrfToken
+    }
+})
+.then(res => res.json())
+.then(data => {
+    console.log('Cart cleared');
+});</pre>
+</div>
+
+<!-- API Reference -->
+<div class="example" style="background: #dbeafe;">
+    <h2>📚 API Reference</h2>
+    
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background: #3b82f6; color: white;">
+            <th style="padding: 10px; text-align: left;">Endpoint</th>
+            <th style="padding: 10px; text-align: left;">Method</th>
+            <th style="padding: 10px; text-align: left;">Description</th>
+        </tr>
+        <tr style="background: white;">
+            <td style="padding: 10px;"><code>/cart</code></td>
+            <td style="padding: 10px;">GET</td>
+            <td style="padding: 10px;">Get cart summary</td>
+        </tr>
+        <tr style="background: #f3f4f6;">
+            <td style="padding: 10px;"><code>/cart/add</code></td>
+            <td style="padding: 10px;">POST</td>
+            <td style="padding: 10px;">Add item to cart</td>
+        </tr>
+        <tr style="background: white;">
+            <td style="padding: 10px;"><code>/cart/update/{id}</code></td>
+            <td style="padding: 10px;">PUT</td>
+            <td style="padding: 10px;">Update item quantity</td>
+        </tr>
+        <tr style="background: #f3f4f6;">
+            <td style="padding: 10px;"><code>/cart/remove/{id}</code></td>
+            <td style="padding: 10px;">DELETE</td>
+            <td style="padding: 10px;">Remove item</td>
+        </tr>
+        <tr style="background: white;">
+            <td style="padding: 10px;"><code>/cart/clear</code></td>
+            <td style="padding: 10px;">DELETE</td>
+            <td style="padding: 10px;">Clear entire cart</td>
+        </tr>
+        <tr style="background: #f3f4f6;">
+            <td style="padding: 10px;"><code>/cart/count</code></td>
+            <td style="padding: 10px;">GET</td>
+            <td style="padding: 10px;">Get total items count</td>
+        </tr>
+    </table>
+</div>
+
+<hr>
+
+<footer style="text-align: center; margin-top: 40px; color: #6b7280;">
+    <p><strong>Tienda Óptica</strong> - Shopping Cart System v1.0</p>
+    <p>See <code>CART_IMPLEMENTATION.md</code> for full documentation</p>
+</footer>
+
+</body>
+</html>

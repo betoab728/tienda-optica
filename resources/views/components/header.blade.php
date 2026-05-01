@@ -1,4 +1,21 @@
-<header class="flex items-center justify-between gap-4 px-4 py-3 shadow-md bg-white">
+<header class="flex items-center justify-between gap-4 px-4 py-3 shadow-md bg-white" 
+    x-data="{ 
+        cartCount: 0,
+        init() {
+            // Load initial cart count
+            this.updateCartCount();
+            // Listen for cart updates
+            window.addEventListener('cart-updated', (e) => {
+                this.cartCount = e.detail.total_count;
+            });
+        },
+        updateCartCount() {
+            fetch('{{ route('cart.count') }}')
+                .then(res => res.json())
+                .then(data => this.cartCount = data.count)
+                .catch(err => console.error('Error loading cart count:', err));
+        }
+    }">
 
     <!-- Hamburger -->
     <x-hamburger-menu />
@@ -49,10 +66,21 @@
             <span class="text-xs">Sigue tu compra</span>
         </div>
 
-        <div class="flex flex-col items-center text-red-600">
-            <img src="/img/cart.svg" class="w-7 h-7" alt="Carrito">
+        <a href="#" class="relative flex flex-col items-center text-red-600 hover:text-red-700 transition-colors">
+            <div class="relative">
+                <img src="/img/cart.svg" class="w-7 h-7" alt="Carrito">
+                {{-- Cart Count Badge --}}
+                <span 
+                    x-show="cartCount > 0"
+                    x-text="cartCount"
+                    class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-sm"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-75"
+                    x-transition:enter-end="opacity-100 scale-100"
+                ></span>
+            </div>
             <span class="text-xs">Carrito</span>
-        </div>
+        </a>
 
     </div>
 

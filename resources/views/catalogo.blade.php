@@ -17,7 +17,8 @@
     {{-- Product Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
         @foreach ($productos as $p)
-            <article class="group bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-xl">
+            <article class="group bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-xl"
+                x-data="{ adding: false }">
                 <a href="{{ route('producto.detalle', $p->idproducto) }}" class="block">
                     
                     {{-- Image Container with Overlay --}}
@@ -44,12 +45,52 @@
                             </span>
                         @endif
                         
-                        {{-- Hover Overlay with "Ver producto" --}}
+                        {{-- Hover Overlay with Quick Actions --}}
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <div class="text-center transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                <span class="inline-flex items-center text-white text-base font-semibold px-6 py-2.5 border-2 border-white rounded-lg hover:bg-white hover:text-gray-900 transition-colors">
-                                    Ver producto
-                                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="text-center transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 space-y-3 px-4">
+                                {{-- Quick Add to Cart Button --}}
+                                <button 
+                                    @click.prevent="
+                                        adding = true;
+                                        fetch('{{ route('cart.add') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({
+                                                product_id: {{ $p->idproducto }},
+                                                name: '{{ addslashes($p->modelo) }}',
+                                                price: {{ $p->precioVenta }},
+                                                image: '{{ $p->imagen }}',
+                                                quantity: 1
+                                            })
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            adding = false;
+                                            window.dispatchEvent(new CustomEvent('cart-updated', { detail: data.cart }));
+                                            // Show success message
+                                            alert('✓ Producto agregado al carrito');
+                                        })
+                                        .catch(err => {
+                                            adding = false;
+                                            alert('Error al agregar al carrito');
+                                        });
+                                    "
+                                    :disabled="adding"
+                                    class="w-full bg-white text-gray-900 text-sm font-bold px-6 py-2.5 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                    </svg>
+                                    <span x-text="adding ? 'Agregando...' : 'Agregar al carrito'"></span>
+                                </button>
+                                
+                                {{-- View Product Link --}}
+                                <span class="inline-flex items-center text-white text-sm font-semibold px-6 py-2 border-2 border-white rounded-lg hover:bg-white hover:text-gray-900 transition-colors">
+                                    Ver detalles
+                                    <svg class="ml-2 w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </span>
