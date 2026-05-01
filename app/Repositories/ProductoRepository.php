@@ -31,7 +31,7 @@ class ProductoRepository
 
         // Agregar URL de imagen (tu CDN con Nginx)
         foreach ($productos as $p) {
-            $p->imagen = env('IMAGES_URL') . "/{$p->idproducto}.jpg";
+            $p->imagen = env('IMAGES_URL') . "/{$p->idproducto}-thumb.jpg";
         }
 
         return $productos;
