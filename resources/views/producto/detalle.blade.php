@@ -46,46 +46,37 @@
             activeIndex: 0
         }">
             
-            {{-- LEFT SIDE: Image Gallery Grid (3 columns on desktop, 60% width) --}}
-            <div class="lg:col-span-3">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {{-- LEFT SIDE: Imagen principal + thumbnails --}}
+            <div class="lg:col-span-3" 
+                x-data="{ 
+                    selectedImage: '{{ $producto->imagenes[0] }}',
+                    activeIndex: 0
+                }">
+
+                {{-- Imagen principal --}}
+                <div class="bg-white rounded-xl border p-6 mb-4">
+                    <img 
+                        :src="selectedImage"
+                        alt="{{ $producto->modelo }}"
+                        class="w-full h-[450px] object-contain transition-all duration-300"
+                    >
+                </div>
+
+                {{-- Miniaturas --}}
+                <div class="flex gap-3 overflow-x-auto">
                     @foreach ($producto->imagenes as $index => $img)
-                        <div 
-                            class="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border-2 transition-all duration-300 cursor-pointer overflow-hidden"
-                            :class="activeIndex === {{ $index }} ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2' : 'border-gray-200 hover:border-gray-400'"
+                        <img 
+                            src="{{ $img }}"
                             @click="selectedImage = '{{ $img }}'; activeIndex = {{ $index }}"
+                            class="w-20 h-20 object-contain border rounded-lg cursor-pointer transition-all duration-200"
+                            :class="activeIndex === {{ $index }} 
+                                ? 'border-gray-900 ring-2 ring-gray-900' 
+                                : 'border-gray-300 hover:border-gray-500'"
+                            onerror="this.style.display='none'"
                         >
-                            <img 
-                                src="{{ $img }}"
-                                alt="{{ $producto->modelo }} - Vista {{ $index + 1 }}"
-                                class="w-full h-full object-contain p-6 transition-transform duration-300 hover:scale-105"
-                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
-                                onerror="this.parentElement.style.display='none'"
-                            >
-                            
-                            {{-- Selected Indicator --}}
-                            <div 
-                                class="absolute top-3 right-3 w-6 h-6 rounded-full bg-gray-900 flex items-center justify-center transition-opacity duration-200"
-                                :class="activeIndex === {{ $index }} ? 'opacity-100' : 'opacity-0'"
-                            >
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                        </div>
                     @endforeach
                 </div>
 
-                {{-- Mobile: Large Selected Image Preview --}}
-                <div class="mt-6 lg:hidden">
-                    <div class="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-300 overflow-hidden">
-                        <img 
-                            :src="selectedImage"
-                            alt="{{ $producto->modelo }}"
-                            class="w-full h-full object-contain p-8"
-                        >
-                    </div>
-                </div>
             </div>
 
             {{-- RIGHT SIDE: Product Info (Sticky, 40% width) --}}
