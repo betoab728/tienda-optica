@@ -9,7 +9,12 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
-    @yield('content')
+    <x-header />
+    <x-navbar />
+
+    <main>
+        @yield('content')
+    </main>
 
 </body>
 </html>

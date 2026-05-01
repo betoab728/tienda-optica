@@ -2,8 +2,7 @@
 
 @section('content')
 
-<x-header />
-<x-navbar />
+
 <x-slider />
 
 <main class="container mx-auto px-4 pb-10">
