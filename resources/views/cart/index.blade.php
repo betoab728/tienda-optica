@@ -18,14 +18,14 @@
                     </svg>
                 </li>
                 <li class="text-gray-900 font-medium">
-                    Su Orden de compra
+                    orden
                 </li>
             </ol>
         </nav>
 
         {{-- Page Title --}}
         <div class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Carrito de Compras</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Su Orden de compra</h1>
             <p class="mt-2 text-gray-600">
                 @if($cart['item_count'] > 0)
                     Tienes {{ $cart['item_count'] }} {{ $cart['item_count'] == 1 ? 'producto' : 'productos' }} en tu carrito
