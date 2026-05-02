@@ -18,7 +18,7 @@
                     </svg>
                 </li>
                 <li class="text-gray-900 font-medium">
-                    Carrito de Compras
+                    Su Orden de compra
                 </li>
             </ol>
         </nav>
