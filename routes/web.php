@@ -7,7 +7,10 @@ use App\Http\Controllers\CartController;
 Route::get('/', [ProductoController::class, 'index']);
 Route::get('/producto/{id}', [ProductoController::class, 'show'])->name('producto.detalle');
 
-// Cart Routes
+// Cart Page (HTML)
+Route::get('/carrito', [CartController::class, 'show'])->name('cart.show');
+
+// Cart API Routes (JSON)
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/add', [CartController::class, 'add'])->name('add');

@@ -16,7 +16,16 @@ class CartController extends Controller
     }
 
     /**
-     * Get cart summary
+     * Show cart page (HTML view)
+     */
+    public function show()
+    {
+        $cart = $this->cartService->getCartSummary();
+        return view('cart.index', compact('cart'));
+    }
+
+    /**
+     * Get cart summary (JSON API)
      */
     public function index(): JsonResponse
     {

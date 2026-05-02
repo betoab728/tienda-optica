@@ -66,7 +66,7 @@
             <span class="text-xs">Sigue tu compra</span>
         </div>
 
-        <a href="#" class="relative flex flex-col items-center text-red-600 hover:text-red-700 transition-colors">
+        <a href="{{ route('cart.show') }}" class="relative flex flex-col items-center text-red-600 hover:text-red-700 transition-colors">
             <div class="relative">
                 <img src="/img/cart.svg" class="w-7 h-7" alt="Carrito">
                 {{-- Cart Count Badge --}}
