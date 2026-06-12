@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'tom-select/dist/css/tom-select.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,4 +9,111 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Tom Select — Tailwind-styled dropdown combobox */
+
+.ocupacion-select {
+    position: relative;
+}
+
+.ocupacion-select .ts-control {
+    width: 100%;
+    padding: 0.625rem 2.5rem 0.625rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(55 65 81);
+    background-color: #fff;
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.75rem;
+    box-shadow: none;
+    min-height: unset;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    cursor: pointer;
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.ocupacion-select.focus .ts-control {
+    border-color: rgb(239 68 68);
+    box-shadow: 0 0 0 2px rgb(239 68 68 / 0.2);
+}
+
+.ocupacion-select .ts-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 0.25rem;
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.75rem;
+    background-color: #fff;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    overflow: hidden;
+    z-index: 110;
+}
+
+.ocupacion-select .ts-dropdown [data-selectable] {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(55 65 81);
+    cursor: pointer;
+    transition-property: color, background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.ocupacion-select .ts-dropdown [data-selectable].active {
+    background-color: rgb(254 242 242);
+    color: rgb(185 28 28);
+}
+
+.ocupacion-select .ts-dropdown [data-selectable]:hover {
+    background-color: rgb(249 250 251);
+}
+
+.ocupacion-select .ts-control > input {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: rgb(55 65 81);
+    min-width: 4rem;
+    max-width: 100%;
+}
+
+.ocupacion-select .ts-control > input::placeholder {
+    color: rgb(156 163 175);
+}
+
+.ocupacion-select .ts-dropdown .no-results {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: rgb(107 114 128);
+}
+
+/* Dropdown arrow — single mode */
+.ocupacion-select.single .ts-control:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid rgb(156 163 175);
+    border-bottom: 2px solid rgb(156 163 175);
+    transform: translateY(-65%) rotate(45deg);
+    transition: transform 150ms;
+}
+
+.ocupacion-select.single.dropdown-active .ts-control:after {
+    transform: translateY(-35%) rotate(-135deg);
 }

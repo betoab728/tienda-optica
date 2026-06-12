@@ -1,0 +1,91 @@
+
+{
+  "paciente": {
+    "nombre": null,
+    "edad": null,
+    "fecha_nacimiento": null,
+    "fecha_receta": null,
+    "doctor": null,
+    "tipo_receta": "oftalmica",
+
+    "ocupacion": null,
+    "uso_principal": null
+  },
+
+  "vision_lejos": {
+    "od": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "dip": null,
+      "av": null
+    },
+
+    "oi": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "dip": null,
+      "av": null
+    }
+  },
+
+  "vision_cerca": {
+    "od": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "dip": null,
+      "av": null
+    },
+
+    "oi": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "dip": null,
+      "av": null
+    }
+  },
+
+  "add": {
+    "od": null,
+    "oi": null
+  },
+
+  "prisma": {
+    "od": null,
+    "oi": null
+  },
+
+  "lente_contacto": {
+    "od": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "cb": null,
+      "diametro": null,
+      "av": null
+    },
+
+    "oi": {
+      "esfera": null,
+      "cilindro": null,
+      "eje": null,
+      "cb": null,
+      "diametro": null,
+      "av": null
+    }
+  },
+
+  "indicaciones": null,
+
+  "analisis_ia": {
+    "interpretacion_usuario": null,
+    "tratamientos_recomendados": null,
+    "requiere_cita": false,
+    "nivel_complejidad": "estandar",
+    "observaciones": null
+  }
+}
+

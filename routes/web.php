@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PrescriptionController;
 
 Route::get('/', [ProductoController::class, 'index']);
 Route::get('/producto/{id}', [ProductoController::class, 'show'])->name('producto.detalle');
@@ -20,3 +21,13 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/count', [CartController::class, 'count'])->name('count');
 });
 
+// Prescription API
+Route::prefix('prescription')->name('prescription.')->group(function () {
+    Route::post('/analyze', [PrescriptionController::class, 'analyze'])->name('analyze');
+});
+
+Route::get('/test-gemini', function (\App\Services\GeminiService $gemini) {
+     $respuesta = $gemini->analizarTexto(
+        'Responde unicamente: API funcionando correctamente' );
+         dd($respuesta);
+    });

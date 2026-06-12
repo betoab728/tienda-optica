@@ -3,6 +3,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import TomSelect from 'tom-select';
+
+window.TomSelect = TomSelect;
 
 document.addEventListener('DOMContentLoaded', () => {
     const slider = document.querySelector('.mySwiper');
