@@ -7,9 +7,7 @@
     "fecha_receta": null,
     "doctor": null,
     "tipo_receta": "oftalmica",
-
-    "ocupacion": null,
-    "uso_principal": null
+    "ocupacion": null
   },
 
   "vision_lejos": {
@@ -82,7 +80,7 @@
 
   "analisis_ia": {
     "interpretacion_usuario": null,
-    "tratamientos_recomendados": null,
+     "recomendacion_general": null,
     "requiere_cita": false,
     "nivel_complejidad": "estandar",
     "observaciones": null
