@@ -18,9 +18,9 @@ class OpticalPrescriptionService
         $this->schemaPath = resource_path('json/receta-optica.json');
     }
 
-    public function analyze(string $base64Data, string $mimeType): array
+    public function analyze(string $base64Data, string $mimeType, array $patientContext = []): array
     {
-        $prompt = $this->buildPrompt();
+        $prompt = $this->buildPrompt($patientContext);
         $response = $this->gemini->analizarImagen($base64Data, $mimeType, $prompt);
         $rawText = $this->gemini->extractTextFromResponse($response);
 
@@ -35,25 +35,83 @@ class OpticalPrescriptionService
 
         $prescription = $this->normalize($prescription);
 
+        if (!empty($patientContext)) {
+            $prescription = $this->overwritePatientFields($prescription, $patientContext);
+        }
+
         return $prescription;
     }
 
-    protected function buildPrompt(): string
+ protected function buildPrompt(array $patientContext = []): string
+{
+    $systemPrompt = file_get_contents($this->promptPath);
+    $schema = file_get_contents($this->schemaPath);
+
+    $schemaArray = json_decode($schema, true);
+
+    if (!$schemaArray) {
+        throw new RuntimeException('No se pudo cargar el esquema de receta óptica.');
+    }
+
+    $prompt = $systemPrompt . "\n\n";
+
+    if (!empty($patientContext)) {
+
+        $prompt .= "--- PATIENT CONTEXT ---\n\n";
+
+        $prompt .= "The following information is known about the patient:\n";
+        $prompt .= "- Occupation: " . ($patientContext['ocupacion'] ?? 'Not specified') . "\n";
+        $prompt .= "- Age: " . ($patientContext['edad'] ?? 'Not specified') . "\n";
+        $prompt .= "- Date of Birth: " . ($patientContext['fecha_nacimiento'] ?? 'Not specified') . "\n\n";
+
+        $prompt .= "Use this information ONLY to improve these fields:\n";
+        $prompt .= "- analisis_ia.interpretacion_usuario\n";
+        $prompt .= "- analisis_ia.recomendacion_general\n";
+        $prompt .= "- analisis_ia.requiere_cita\n\n";
+
+        $prompt .= "Occupation and age may be used to personalize the interpretation and recommendation.\n";
+        $prompt .= "Examples include office work, prolonged computer use, reading activities, driving, precision work, or similar visual demands.\n\n";
+
+        $prompt .= "DO NOT infer or generate prescription optical values from age or occupation.\n";
+        $prompt .= "Prescription values (esfera, cilindro, eje, dip, av, add, prisma, cb, diametro, etc.) must come EXCLUSIVELY from the uploaded prescription document.\n\n";
+
+        $prompt .= "Age alone does NOT justify diagnosing presbyopia.\n";
+        $prompt .= "Addition (ADD) values alone do NOT automatically mean presbyopia.\n";
+        $prompt .= "Presbyopia should only be mentioned when the complete prescription clearly supports that conclusion.\n\n";
+
+        $prompt .= "DO NOT populate paciente.ocupacion, paciente.fecha_nacimiento, or paciente.edad. The backend will populate those fields.\n\n";
+    }
+
+    $prompt .= "Official JSON Schema:\n";
+    $prompt .= json_encode(
+        $schemaArray,
+        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+    );
+    $prompt .= "\n\n";
+
+    $prompt .= "Additional extraction rules:\n";
+    $prompt .= "- If a value is clearly visible, extract it exactly.\n";
+    $prompt .= "- If a value is missing, unreadable, or not present, return null.\n";
+    $prompt .= "- Never guess or invent optical values.\n";
+    $prompt .= "- Partial extraction is preferred over invented values.\n";
+    $prompt .= "- If the prescription is partially readable, extract only the values that can be identified confidently.\n\n";
+
+    $prompt .= "Fill this schema with the optical values found in the prescription.\n";
+    $prompt .= "Return ONLY the completed JSON object.\n";
+    $prompt .= "Do not return markdown.\n";
+    $prompt .= "Do not return explanations.\n";
+    $prompt .= "Do not return text before or after the JSON.\n";
+
+    return $prompt;
+}
+
+    protected function overwritePatientFields(array $prescription, array $patientContext): array
     {
-        $systemPrompt = file_get_contents($this->promptPath);
-        $schema = file_get_contents($this->schemaPath);
+        $prescription['paciente']['ocupacion'] = $patientContext['ocupacion'] ?? null;
+        $prescription['paciente']['fecha_nacimiento'] = $patientContext['fecha_nacimiento'] ?? null;
+        $prescription['paciente']['edad'] = $patientContext['edad'] ?? null;
 
-        $schemaArray = json_decode($schema, true);
-        if (!$schemaArray) {
-            throw new RuntimeException('No se pudo cargar el esquema de receta óptica.');
-        }
-
-        $prompt = $systemPrompt . "\n\n";
-        $prompt .= "Official JSON Schema:\n```json\n" . json_encode($schemaArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n```\n\n";
-        $prompt .= "Fill this schema with the optical values found in the prescription. ";
-        $prompt .= "Return ONLY the filled JSON, nothing else.";
-
-        return $prompt;
+        return $prescription;
     }
 
     protected function parseJson(string $rawText): array

@@ -24,4 +24,17 @@ class OcupacionRepository
             return [];
         }
     }
+
+    public function findById($id): ?object
+    {
+        $ocupaciones = $this->obtenerOcupaciones();
+
+        foreach ($ocupaciones as $ocupacion) {
+            if ($ocupacion->id == $id) {
+                return $ocupacion;
+            }
+        }
+
+        return null;
+    }
 }
